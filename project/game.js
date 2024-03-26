@@ -13,10 +13,15 @@ export class Game {
     POSITION_Z_CAMERA = 8;
     POSITION_Y_CAMERA = 1;
 
+    SPOTLIGHT_POSITION = { x: 0, y: 7, z: 0 };
+    SPOTLIGHT_DISTANCE = 10;
+    SPOTLIGHT_ANGLE = Math.PI / 5;
+    SPOTHLIGHT_INTENSITY = 90;
+
     MAP_WIDTH = 101;
     MAP_HEIGHT = 101;
 
-    LIGHT_COLOR = 0xff35;
+    LIGHT_COLOR = 0xffffff;
     LIGHT_INTENSITY = 0.5;
 
     isStarted = false;
@@ -47,19 +52,22 @@ export class Game {
         document.body.appendChild(this.renderer.domElement)
 
         this.addMainCamera();
+        this.addSpotLight();
+        
+        this.animate();
+    }
 
-        const spotLight = new THREE.SpotLight(0xffffff, 85);
-        spotLight.angle = Math.PI / 5;
-        spotLight.distance = 10;
-        spotLight.position.set(0, 7, 0);
+    addSpotLight() {
+        const spotLight = new THREE.SpotLight(this.LIGHT_COLOR, this.SPOTHLIGHT_INTENSITY);
+        spotLight.angle = this.SPOTLIGHT_ANGLE;
+        spotLight.distance = this.SPOTLIGHT_DISTANCE;
+        spotLight.position.set(this.SPOTLIGHT_POSITION.x, this.SPOTLIGHT_POSITION.y, this.SPOTLIGHT_POSITION.z);
         spotLight.castShadow = true;
-        const spotLightHelper = new THREE.SpotLightHelper(spotLight);
-        spotLightHelper.visible = true;
-        this.scene.add(spotLightHelper)
         this.scene.add(spotLight);
 
-
-        this.animate();
+        // const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+        // spotLightHelper.visible = true;
+        // this.scene.add(spotLightHelper)
     }
 
     addMainCamera() {

@@ -18,7 +18,7 @@ export class Wall {
         });
 
         const texture = new THREE.TextureLoader().load(
-            './assets/img/textures/crate.gif',
+            './assets/img/textures/backroomWall.jpg',
             texture => {
                 texture.wrapS = THREE.RepeatWrapping;
                 texture.wrapT = THREE.RepeatWrapping;
@@ -31,7 +31,7 @@ export class Wall {
         let wall = new THREE.Mesh(geometry, material);
         wall.position.x = this.positionX;
         wall.position.z = this.positionY;
-        wall.position.y = (this.height -1) /2;
+        wall.position.y = (this.height - 1) / 2;
 
         return wall;
     }
