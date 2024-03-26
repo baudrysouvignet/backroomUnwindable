@@ -1,5 +1,6 @@
 import * as THREE from 'https://cdn.skypack.dev/three@0.150.1';
 import { MapMaze } from './map_maze.js';
+import { Wall } from './wall.js';
 
 export class Game {
     BACKGROUND_COLOR_SCENE = 0xa0A0A0;
@@ -12,6 +13,8 @@ export class Game {
 
     MAP_WIDTH = 50;
     MAP_HEIGHT = 50;
+
+    isStarted = false;
 
     constructor(widthRender, heightRender) {
         this.widthRender = widthRender;
@@ -49,20 +52,19 @@ export class Game {
     }
 
     start() {
-        this.map = new MapMaze(this.MAP_WIDTH, this.MAP_HEIGHT).createMap();
-
-
-        function display(map, height, width) {
-            let mazeString = "";
-            for (let i = 0; i < height + 1; i++) {
-                for (let j = 0; j < width + 1; j++) {
-                    mazeString += map[i][j] ? " " : "#";
-                }
-                mazeString += "\n";
-            }
-            return mazeString;
+        if (this.isStarted) {
+            return;
         }
 
-        console.log(display(this.map, this.MAP_HEIGHT, this.MAP_WIDTH));
+        this.isStarted = true
+        this.map = new MapMaze(this.MAP_WIDTH, this.MAP_HEIGHT).createMap();
+
+        for (let y = 0; y < this.MAP_HEIGHT; y++) {
+            for (let x = 0; x < this.MAP_WIDTH; x++) {
+                if (!this.map[y][x]) {
+                    this.scene.add(new Wall(1, x - (this.MAP_WIDTH / 2), y - (this.MAP_WIDTH / 2)).addWall());
+                }
+            }
+        }
     }
 }
