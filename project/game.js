@@ -1,4 +1,5 @@
 import * as THREE from 'https://cdn.skypack.dev/three@0.150.1';
+import { MapMaze } from './map_maze.js';
 
 export class Game {
     BACKGROUND_COLOR_SCENE = 0xa0A0A0;
@@ -8,6 +9,9 @@ export class Game {
     RATIO_CAMERA = window.innerWidth / window.innerHeight;
     POSITION_Z_CAMERA = 5;
     POSITION_Y_CAMERA = 1;
+
+    MAP_WIDTH = 10;
+    MAP_HEIGHT = 10;
 
     constructor(widthRender, heightRender) {
         this.widthRender = widthRender;
@@ -41,5 +45,12 @@ export class Game {
     addMainCamera() {
         this.camera = new THREE.PerspectiveCamera(this.FOV_CAMERA, this.RATIO_CAMERA, this.NEAR_CAMERA, this.FAR_CAMERA);
         this.camera.position.z = this.POSITION_Z_CAMERA;
+    }
+
+    start() {
+        let map = new MapMaze(this.MAP_WIDTH, this.MAP_HEIGHT).createMap();
+
+
+        console.log(map);
     }
 }

@@ -1,3 +1,6 @@
 import { Game } from './game.js';
 
-new Game(window.innerWidth, window.innerHeight).addScene();
+const game = (new Game(window.innerWidth, window.innerHeight));
+game.addScene();
+
+game.start();
