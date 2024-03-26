@@ -4,7 +4,7 @@ const game = (new Game(window.innerWidth, window.innerHeight));
 game.addScene();
 
 
-document.addEventListener('keydown', function(event) {
+document.addEventListener('keydown', function (event) {
     if (event.key === 'Enter') {
         game.start();
     }

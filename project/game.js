@@ -24,6 +24,12 @@ export class Game {
     LIGHT_COLOR = 0xffffff;
     LIGHT_INTENSITY = 0.5;
 
+    WALL_MIN_HEIGHT = 2;
+    WALL_MAX_HEIGHT = 3;
+
+    CONTROLS_MIN_DISTANCE = 2;
+    CONTROLS_MAX_DISTANCE = 10;
+
     isStarted = false;
 
     constructor(widthRender, heightRender) {
@@ -34,6 +40,7 @@ export class Game {
         this.camera = null;
         this.renderer = null;
         this.map = null;
+        this.ground = null;
     }
 
     animate = () => {
@@ -53,8 +60,33 @@ export class Game {
 
         this.addMainCamera();
         this.addSpotLight();
-        
+        this.placeGround();
+
         this.animate();
+    }
+
+    placeGround() {
+        const groundGeometry = new THREE.PlaneGeometry(this.MAP_WIDTH, this.MAP_HEIGHT, 10, 10);
+        const groundMaterial = new THREE.MeshStandardMaterial({
+            side: THREE.DoubleSide,
+            color: 0x0A0A0A
+        });
+
+        const texture = new THREE.TextureLoader().load(
+            './assets/img/textures/Carpet.jpg',
+            texture => {
+                texture.wrapS = THREE.RepeatWrapping;
+                texture.wrapT = THREE.RepeatWrapping;
+                texture.repeat.set(this.MAP_WIDTH, this.MAP_HEIGHT);
+                groundMaterial.map = texture;
+                groundMaterial.needsUpdate = true;
+            }
+        );
+
+        this.ground = new THREE.Mesh(groundGeometry, groundMaterial);
+        this.ground.position.y = 0;
+        this.ground.rotation.x = -Math.PI / 2;
+        this.scene.add(this.ground);
     }
 
     addSpotLight() {
@@ -64,10 +96,6 @@ export class Game {
         spotLight.position.set(this.SPOTLIGHT_POSITION.x, this.SPOTLIGHT_POSITION.y, this.SPOTLIGHT_POSITION.z);
         spotLight.castShadow = true;
         this.scene.add(spotLight);
-
-        // const spotLightHelper = new THREE.SpotLightHelper(spotLight);
-        // spotLightHelper.visible = true;
-        // this.scene.add(spotLightHelper)
     }
 
     addMainCamera() {
@@ -76,8 +104,8 @@ export class Game {
 
         const controls = new OrbitControls(this.camera, this.renderer.domElement);
         controls.update();
-        controls.minDistance = 2;
-        controls.maxDistance = 10;
+        controls.minDistance = this.CONTROLS_MIN_DISTANCE;
+        controls.maxDistance = this.CONTROLS_MAX_DISTANCE;
 
         controls.maxPolarAngle = Math.PI / 2;
         controls.dampingFactor = 0.005;
@@ -94,7 +122,7 @@ export class Game {
         for (let y = 0; y < this.MAP_HEIGHT; y++) {
             for (let x = 0; x < this.MAP_WIDTH; x++) {
                 if (!this.map[y][x]) {
-                    const randomHeight = Math.floor(Math.random() * 3) + 1; 
+                    const randomHeight = Math.floor(Math.random() * this.WALL_MAX_HEIGHT) + this.WALL_MIN_HEIGHT;
                     this.scene.add(new Wall(randomHeight, x - (this.MAP_WIDTH / 2), y - (this.MAP_WIDTH / 2)).addWall());
                 }
             }

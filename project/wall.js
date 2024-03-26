@@ -31,7 +31,7 @@ export class Wall {
         let wall = new THREE.Mesh(geometry, material);
         wall.position.x = this.positionX;
         wall.position.z = this.positionY;
-        wall.position.y = (this.height - 1) / 2;
+        wall.position.y = (this.height) / this.height;
 
         return wall;
     }
