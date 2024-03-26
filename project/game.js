@@ -10,8 +10,8 @@ export class Game {
     POSITION_Z_CAMERA = 5;
     POSITION_Y_CAMERA = 1;
 
-    MAP_WIDTH = 10;
-    MAP_HEIGHT = 10;
+    MAP_WIDTH = 50;
+    MAP_HEIGHT = 50;
 
     constructor(widthRender, heightRender) {
         this.widthRender = widthRender;
@@ -20,6 +20,7 @@ export class Game {
         this.scene = null;
         this.camera = null;
         this.renderer = null;
+        this.map = null;
     }
 
     animate = () => {
@@ -48,9 +49,20 @@ export class Game {
     }
 
     start() {
-        let map = new MapMaze(this.MAP_WIDTH, this.MAP_HEIGHT).createMap();
+        this.map = new MapMaze(this.MAP_WIDTH, this.MAP_HEIGHT).createMap();
 
 
-        console.log(map);
+        function display(map, height, width) {
+            let mazeString = "";
+            for (let i = 0; i < height + 1; i++) {
+                for (let j = 0; j < width + 1; j++) {
+                    mazeString += map[i][j] ? " " : "#";
+                }
+                mazeString += "\n";
+            }
+            return mazeString;
+        }
+
+        console.log(display(this.map, this.MAP_HEIGHT, this.MAP_WIDTH));
     }
 }

@@ -1,4 +1,5 @@
 export class MapMaze {
+    SPAWN_SIZE = 6;
     directions = [
         { x: 0, y: -2 },
         { x: 2, y: 0 },
@@ -49,10 +50,24 @@ export class MapMaze {
         }
     }
 
+    spawn(radius = 4) {
+        const centerX = Math.floor(this.width / 2);
+        const centerY = Math.floor(this.height / 2);
+
+        for (let y = centerY - (radius / 2); y <= centerY + (radius / 2); y++) {
+            for (let x = centerX - (radius / 2); x <= centerX + (radius / 2); x++) {
+                if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
+                    this.map[y][x] = true;
+                }
+            }
+        }
+    }
+
     createMap() {
         this.map = this.initializeGrid(this.width * 2 + 1, this.height * 2 + 1);
 
         this.walk(Math.floor(Math.random() * this.width) * 2, Math.floor(Math.random() * this.height) * 2);
+        this.spawn(this.SPAWN_SIZE);
 
         return this.map;
     }
