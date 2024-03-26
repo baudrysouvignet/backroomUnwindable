@@ -67,4 +67,12 @@ export class Game {
             }
         }
     }
+
+    resizeWindow() {
+        this.widthRender = window.innerWidth;
+        this.heightRender = window.innerHeight;
+        this.renderer.setSize(this.widthRender, this.heightRender);
+        this.camera.aspect = this.widthRender / this.heightRender;
+        this.camera.updateProjectionMatrix();
+    }
 }

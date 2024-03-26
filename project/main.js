@@ -8,3 +8,7 @@ document.addEventListener('keydown', function(event) {
         game.start();
     }
 });
+
+window.addEventListener('resize', () => {
+    game.resizeWindow();
+})
