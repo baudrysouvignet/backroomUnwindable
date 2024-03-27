@@ -41,6 +41,8 @@ export class Game {
         this.renderer = null;
         this.map = null;
         this.ground = null;
+        this.physicsWorld = null;
+        this.player = null
     }
 
     animate = () => {
@@ -56,13 +58,43 @@ export class Game {
 
         this.renderer = new THREE.WebGLRenderer();
         this.renderer.setSize(this.widthRender, this.heightRender);
-        document.body.appendChild(this.renderer.domElement)
+        document.body.appendChild(this.renderer.domElement);
 
-        this.addMainCamera();
-        this.addSpotLight();
-        this.placeGround();
+        this.createPhysicsWorld();
+    }
 
-        this.animate();
+    createPhysicsWorld() {
+        Ammo().then(function (AmmoLib) {
+            Ammo = AmmoLib;
+
+            const collisionConfiguration = new Ammo.btDefaultCollisionConfiguration();
+            const dispatcher = new Ammo.btCollisionDispatcher(collisionConfiguration);
+            const overlappingPairCache = new Ammo.btDbvtBroadphase();
+            const solver = new Ammo.btSequentialImpulseConstraintSolver();
+
+            this.physicsWorld = new Ammo.btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfiguration);
+            this.physicsWorld.setGravity(new Ammo.btVector3(0, -9.8, 0));
+
+            this.initGroundPhysics(this.physicsWorld);
+
+            this.addMainCamera();
+            this.addSpotLight();
+            this.placeGround();
+
+            this.animate();
+        }.bind(this));
+    }
+
+    initGroundPhysics(physicsWorld) {
+        const groundShape = new Ammo.btStaticPlaneShape(new Ammo.btVector3(0, 1, 0), 0);
+        const groundTransform = new Ammo.btTransform();
+        groundTransform.setIdentity();
+        const groundMass = 0;
+        const localInertia = new Ammo.btVector3(0, 0, 0);
+        const motionState = new Ammo.btDefaultMotionState(groundTransform);
+        const rbInfo = new Ammo.btRigidBodyConstructionInfo(groundMass, motionState, groundShape, localInertia);
+        const groundBody = new Ammo.btRigidBody(rbInfo);
+        physicsWorld.addRigidBody(groundBody);
     }
 
     placeGround() {
