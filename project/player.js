@@ -1,0 +1,50 @@
+import * as THREE from 'https://cdn.skypack.dev/pin/three@v0.150.1-r75e9MvYwn7pBFuUt6Gu/mode=imports,min/optimized/three.js';
+
+
+export class Player {
+  constructor(physicsWorld, radius = 0.5, position = new THREE.Vector3(0, 1, 0), color = 0xff0000) {
+    this.physicsWorld = physicsWorld;
+    this.radius = radius;
+    this.position = position;
+    this.color = color;
+    this.mesh = null;
+
+    this.createMesh();
+    this.createPhysicsBody();
+  }
+
+  createMesh() {
+    const geometry = new THREE.SphereGeometry(this.radius, 32, 32);
+    const material = new THREE.MeshBasicMaterial({ color: this.color });
+    this.mesh = new THREE.Mesh(geometry, material); 
+  }
+
+  addMesh(scene) {
+    scene.add(this.mesh);
+  }
+
+  createPhysicsBody() {
+      const shape = new Ammo.btSphereShape(this.radius);
+      const transform = new Ammo.btTransform();
+      transform.setIdentity();
+      transform.setOrigin(new Ammo.btVector3(this.position.x, this.position.y, this.position.z));
+      const mass = 1;
+      const inertia = new Ammo.btVector3(0, 0, 0);
+      shape.calculateLocalInertia(mass, inertia);
+      const motionState = new Ammo.btDefaultMotionState(transform);
+      const rbInfo = new Ammo.btRigidBodyConstructionInfo(mass, motionState, shape, inertia);
+      this.body = new Ammo.btRigidBody(rbInfo);
+      this.physicsWorld.addRigidBody(this.body);
+    
+  }
+
+  update() {
+    const transform = new Ammo.btTransform();
+    this.body.getMotionState().getWorldTransform(transform);
+    const pos = transform.getOrigin();
+    const rot = transform.getRotation();
+    this.mesh.position.set(pos.x(), pos.y(), pos.z());
+    console.log('pos', pos.x(), pos.y(), pos.z());
+    this.mesh.quaternion.set(rot.x(), rot.y(), rot.z(), rot.w());
+  }
+}

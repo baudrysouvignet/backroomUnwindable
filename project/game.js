@@ -4,6 +4,8 @@ import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.121.1/exampl
 import { MapMaze } from './map_maze.js';
 import { Wall } from './wall.js';
 
+import { Player } from './player.js';
+
 export class Game {
     BACKGROUND_COLOR_SCENE = 0x0A0A0A;
     NEAR_CAMERA = 0.1;
@@ -42,12 +44,13 @@ export class Game {
         this.map = null;
         this.ground = null;
         this.physicsWorld = null;
-        this.player = null
+
     }
 
     animate = () => {
         requestAnimationFrame(this.animate);
-
+        this.physicsWorld.stepSimulation(1 / 60, 10)
+        this.player.update();
         this.renderer.render(this.scene, this.camera);
     }
 
@@ -80,7 +83,8 @@ export class Game {
             this.addMainCamera();
             this.addSpotLight();
             this.placeGround();
-
+            this.player = new Player(this.physicsWorld);
+            this.player.addMesh(this.scene);
             this.animate();
         }.bind(this));
     }
