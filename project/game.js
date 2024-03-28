@@ -12,13 +12,15 @@ export class Game {
     FAR_CAMERA = 1000;
     FOV_CAMERA = 75;
     RATIO_CAMERA = window.innerWidth / window.innerHeight;
-    POSITION_Z_CAMERA = 8;
-    POSITION_Y_CAMERA = 1;
+
+    POSITION_X_CAMERA = 4;
+    POSITION_Y_CAMERA = 4;
+    POSITION_Z_CAMERA = 9;
 
     SPOTLIGHT_POSITION = { x: 0, y: 7, z: 0 };
-    SPOTLIGHT_DISTANCE = 10;
+    SPOTLIGHT_DISTANCE = 15;
     SPOTLIGHT_ANGLE = Math.PI / 5;
-    SPOTHLIGHT_INTENSITY = 90;
+    SPOTHLIGHT_INTENSITY = 70;
 
     MAP_WIDTH = 101;
     MAP_HEIGHT = 101;
@@ -26,8 +28,8 @@ export class Game {
     LIGHT_COLOR = 0xffffff;
     LIGHT_INTENSITY = 0.5;
 
-    WALL_MIN_HEIGHT = 2;
-    WALL_MAX_HEIGHT = 3;
+    WALL_MIN_HEIGHT = 1;
+    WALL_MAX_HEIGHT = 2;
 
     CONTROLS_MIN_DISTANCE = 2;
     CONTROLS_MAX_DISTANCE = 10;
@@ -46,7 +48,7 @@ export class Game {
         this.map = null;
         this.ground = null;
         this.physicsWorld = null;
-
+        this.spotLight = null;
     }
 
     animate = () => {
@@ -55,7 +57,8 @@ export class Game {
         if (this.isStarted) {
             this.player.update();
         }
-
+        this.updateCamera();
+        this.updateSpotLight();
         this.renderer.render(this.scene, this.camera);
     }
 
@@ -85,9 +88,7 @@ export class Game {
 
             this.initGroundPhysics(this.physicsWorld);
 
-            this.addMainCamera();
             this.placeGround();
-            this.animate();
         }.bind(this));
     }
 
@@ -128,25 +129,33 @@ export class Game {
     }
 
     addSpotLight() {
-        const spotLight = new THREE.SpotLight(this.LIGHT_COLOR, this.SPOTHLIGHT_INTENSITY);
-        spotLight.angle = this.SPOTLIGHT_ANGLE;
-        spotLight.distance = this.SPOTLIGHT_DISTANCE;
-        spotLight.position.set(this.SPOTLIGHT_POSITION.x, this.SPOTLIGHT_POSITION.y, this.SPOTLIGHT_POSITION.z);
-        spotLight.castShadow = true;
-        this.player.recoverMesh().add(spotLight);
+        this.spotLight = new THREE.SpotLight(this.LIGHT_COLOR, this.SPOTHLIGHT_INTENSITY);
+        this.spotLight.angle = this.SPOTLIGHT_ANGLE;
+        this.spotLight.distance = this.SPOTLIGHT_DISTANCE;
+        this.spotLight.castShadow = true;
+        this.scene.add(this.spotLight);
+    }
+
+    updateSpotLight() {
+        let mesh = this.player.recoverMesh();
+        let position = mesh.position;
+
+        this.spotLight.position.set(position.x + this.SPOTLIGHT_POSITION.x, position.y + this.SPOTLIGHT_POSITION.y, position.z + this.SPOTLIGHT_POSITION.z);
+        this.spotLight.target = mesh;
+
+        console.log(position.z + this.SPOTLIGHT_POSITION.z)
     }
 
     addMainCamera() {
         this.camera = new THREE.PerspectiveCamera(this.FOV_CAMERA, this.RATIO_CAMERA, this.NEAR_CAMERA, this.FAR_CAMERA);
-        this.camera.position.z = this.POSITION_Z_CAMERA;
+        this.camera.position.set(this.POSITION_X_CAMERA, this.POSITION_Y_CAMERA, this.POSITION_Z_CAMERA)
+        this.camera.lookAt(this.player.recoverMesh().position);
+    }
 
-        const controls = new OrbitControls(this.camera, this.renderer.domElement);
-        controls.update();
-        controls.minDistance = this.CONTROLS_MIN_DISTANCE;
-        controls.maxDistance = this.CONTROLS_MAX_DISTANCE;
-
-        controls.maxPolarAngle = Math.PI / 2;
-        controls.dampingFactor = 0.005;
+    updateCamera() {
+        this.camera.lookAt(this.player.recoverMesh().position);
+        let position = this.player.recoverMesh().position;
+        this.camera.position.set(position.x + this.POSITION_X_CAMERA, position.y + this.POSITION_Z_CAMERA, position.z + this.POSITION_Y_CAMERA)
     }
 
     start() {
@@ -157,6 +166,8 @@ export class Game {
         this.player = new Player(this.physicsWorld);
 
         this.addSpotLight();
+        this.addMainCamera();
+        this.animate();
         this.player.addMesh(this.scene);
 
         this.isStarted = true

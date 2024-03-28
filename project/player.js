@@ -3,10 +3,17 @@ import * as THREE from 'https://cdn.skypack.dev/pin/three@v0.150.1-r75e9MvYwn7pB
 
 export class Player {
   SPEED = 0.04;
-  isForward = false;
+  isForward = true;
+
   isBackward = false;
   isLeft = false;
   isRight = false;
+  moveDirection = {
+    forward: 0,
+    backward: 0,
+    leftward: 0,
+    rightward: 0,
+  };
   y = -1;
 
   constructor(physicsWorld, radius = 0.4, position = new THREE.Vector3(0.01, 10, 0), color = 0xff0000) {
@@ -46,7 +53,6 @@ export class Player {
     const rbInfo = new Ammo.btRigidBodyConstructionInfo(mass, motionState, shape, inertia);
     this.body = new Ammo.btRigidBody(rbInfo);
     this.physicsWorld.addRigidBody(this.body);
-
   }
 
   forward(type) {
@@ -67,35 +73,59 @@ export class Player {
 
   leftward(type) {
     if (type === 'keydown') {
+      this.isRight = true;
+    } else {
+      this.isRight = false;
+    }
+
+  }
+
+  rightward(type) {
+    if (type === 'keydown') {
       this.isLeft = true;
     } else {
       this.isLeft = false;
     }
   }
 
-  rightward(type) {
-    if (type === 'keydown') {
-      this.isRight = true;
-    } else {
-      this.isRight = false;
-    }
+  updateMoveDirection() {
+    this.moveDirection.forward = this.isForward ? 1 : 0;
+    this.moveDirection.backward = this.isBackward ? 1 : 0;
+    this.moveDirection.right = this.isRight
+      ? 1 : 0;
+    this.moveDirection.left = this.isLeft ? 1 : 0;
+  }
+
+  moveBall() {
+    this.updateMoveDirection();
+    let scalingFactor = 1;
+
+    let moveX = this.moveDirection.right * scalingFactor - this.moveDirection.left * scalingFactor;
+    let moveZ = this.moveDirection.backward * scalingFactor - this.moveDirection.forward * scalingFactor;
+    let moveY = 0;
+
+    if (moveX === 0 && moveZ === 0) return;
+
+    let resultantImpulse = new Ammo.btVector3(moveX, moveY, moveZ);
+    this.body.setLinearVelocity(resultantImpulse);
   }
 
 
   update() {
-    const moveDirection = {
-      x: this.isRight ? this.SPEED : (this.isLeft ? -this.SPEED : 0),
-      z: this.isForward ? this.SPEED : (this.isBackward ? -this.SPEED : 0),
-    };
-
-    const forward = new Ammo.btVector3(moveDirection.x, 0, moveDirection.z);
-    this.body.applyCentralImpulse(forward);
+    this.moveBall();
 
     const transform = new Ammo.btTransform();
     this.body.getMotionState().getWorldTransform(transform);
     const pos = transform.getOrigin();
     const rot = transform.getRotation();
     this.mesh.position.set(pos.x(), pos.y(), pos.z());
+
+    const velocity = this.body.getLinearVelocity();
+    const magnitude = velocity.length();
+
+    if (magnitude <= 0) {
+      console.log('Player is immobile' + magnitude);
+    }
   }
 
 }
