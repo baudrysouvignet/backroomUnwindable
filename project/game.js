@@ -166,7 +166,7 @@ export class Game {
             for (let x = 0; x < this.MAP_WIDTH; x++) {
                 if (!this.map[y][x]) {
                     const randomHeight = Math.floor(Math.random() * this.WALL_MAX_HEIGHT) + this.WALL_MIN_HEIGHT;
-                    this.scene.add(new Wall(randomHeight, x - (this.MAP_WIDTH / 2), y - (this.MAP_WIDTH / 2)).addWall());
+                    this.scene.add(new Wall(this.physicsWorld, randomHeight, x - (this.MAP_WIDTH / 2), y - (this.MAP_WIDTH / 2)).addWall());
                 }
             }
         }
