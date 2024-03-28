@@ -32,6 +32,8 @@ export class Game {
     CONTROLS_MIN_DISTANCE = 2;
     CONTROLS_MAX_DISTANCE = 10;
 
+    GRAVITY = -9.8;
+
     isStarted = false;
 
     constructor(widthRender, heightRender) {
@@ -50,7 +52,10 @@ export class Game {
     animate = () => {
         requestAnimationFrame(this.animate);
         this.physicsWorld.stepSimulation(1 / 60, 10)
-        this.player.update();
+        if (this.isStarted) {
+            this.player.update();
+        }
+
         this.renderer.render(this.scene, this.camera);
     }
 
@@ -76,15 +81,12 @@ export class Game {
             const solver = new Ammo.btSequentialImpulseConstraintSolver();
 
             this.physicsWorld = new Ammo.btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfiguration);
-            this.physicsWorld.setGravity(new Ammo.btVector3(0, -9.8, 0));
+            this.physicsWorld.setGravity(new Ammo.btVector3(0, this.GRAVITY, 0));
 
             this.initGroundPhysics(this.physicsWorld);
 
             this.addMainCamera();
-            this.addSpotLight();
             this.placeGround();
-            this.player = new Player(this.physicsWorld);
-            this.player.addMesh(this.scene);
             this.animate();
         }.bind(this));
     }
@@ -131,7 +133,7 @@ export class Game {
         spotLight.distance = this.SPOTLIGHT_DISTANCE;
         spotLight.position.set(this.SPOTLIGHT_POSITION.x, this.SPOTLIGHT_POSITION.y, this.SPOTLIGHT_POSITION.z);
         spotLight.castShadow = true;
-        this.scene.add(spotLight);
+        this.player.recoverMesh().add(spotLight);
     }
 
     addMainCamera() {
@@ -152,6 +154,11 @@ export class Game {
             return;
         }
 
+        this.player = new Player(this.physicsWorld);
+
+        this.addSpotLight();
+        this.player.addMesh(this.scene);
+
         this.isStarted = true
         this.map = new MapMaze(this.MAP_WIDTH, this.MAP_HEIGHT).createMap();
 
@@ -162,6 +169,30 @@ export class Game {
                     this.scene.add(new Wall(randomHeight, x - (this.MAP_WIDTH / 2), y - (this.MAP_WIDTH / 2)).addWall());
                 }
             }
+        }
+    }
+
+    movePlayer(where) {
+        if (where === 'forward') {
+            this.player.forward('keydown');
+        } else if (where === 'backward') {
+            this.player.backward('keydown');
+        } else if (where === 'leftward') {
+            this.player.leftward('keydown');
+        } else if (where === 'rightward') {
+            this.player.rightward('keydown');
+        }
+    }
+
+    stopPlayer(where) {
+        if (where === 'forward') {
+            this.player.forward('keydup');
+        } else if (where === 'backward') {
+            this.player.backward('keydup');
+        } else if (where === 'leftward') {
+            this.player.leftward('keydup');
+        } else if (where === 'rightward') {
+            this.player.rightward('keydup');
         }
     }
 
