@@ -52,10 +52,13 @@ export class Game {
     }
 
     animate = () => {
+        if (!this.isStarted) {
+            return;
+        }
         requestAnimationFrame(this.animate);
         this.physicsWorld.stepSimulation(1 / 60, 10)
         if (this.isStarted) {
-            this.player.update();
+            this.player.update(this);
         }
         this.updateCamera();
         this.updateSpotLight();
@@ -162,6 +165,7 @@ export class Game {
         if (this.isStarted) {
             return;
         }
+        this.isStarted = true
 
         this.player = new Player(this.physicsWorld);
 
@@ -170,7 +174,7 @@ export class Game {
         this.animate();
         this.player.addMesh(this.scene);
 
-        this.isStarted = true
+
         this.map = new MapMaze(this.MAP_WIDTH, this.MAP_HEIGHT).createMap();
 
         for (let y = 0; y < this.MAP_HEIGHT; y++) {
@@ -184,6 +188,9 @@ export class Game {
     }
 
     movePlayer(where) {
+        if (!this.isStarted) {
+            return;
+        }
         if (where === 'forward') {
             this.player.forward('keydown');
         } else if (where === 'backward') {
@@ -196,6 +203,9 @@ export class Game {
     }
 
     stopPlayer(where) {
+        if (!this.isStarted) {
+            return;
+        }
         if (where === 'forward') {
             this.player.forward('keydup');
         } else if (where === 'backward') {
@@ -213,5 +223,14 @@ export class Game {
         this.renderer.setSize(this.widthRender, this.heightRender);
         this.camera.aspect = this.widthRender / this.heightRender;
         this.camera.updateProjectionMatrix();
+    }
+
+    die() {
+        console.log('die');
+
+        this.isStarted = false;
+        this.scene.remove(this.player.recoverMesh());
+        this.scene.remove(this.spotLight);
+        document.querySelector('.die').style.display = 'flex';
     }
 }

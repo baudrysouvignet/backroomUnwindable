@@ -80,6 +80,8 @@ export class Player {
 
   }
 
+
+
   rightward(type) {
     if (type === 'keydown') {
       this.isLeft = true;
@@ -89,11 +91,10 @@ export class Player {
   }
 
   updateMoveDirection() {
-    this.moveDirection.forward = this.isForward ? 1 : 0;
-    this.moveDirection.backward = this.isBackward ? 1 : 0;
-    this.moveDirection.right = this.isRight
-      ? 1 : 0;
-    this.moveDirection.left = this.isLeft ? 1 : 0;
+    this.moveDirection.forward = this.isForward || this.isRight ? 1 : 0;
+    this.moveDirection.backward = this.isBackward || this.isLeft ? 1 : 0;
+    this.moveDirection.right = this.isBackward || this.isRight ? 1 : 0;
+    this.moveDirection.left = this.isForward || this.isLeft ? 1 : 0;
   }
 
   moveBall() {
@@ -111,7 +112,7 @@ export class Player {
   }
 
 
-  update() {
+  update(game) {
     this.moveBall();
 
     const transform = new Ammo.btTransform();
@@ -124,7 +125,7 @@ export class Player {
     const magnitude = velocity.length();
 
     if (magnitude <= 0) {
-      console.log('Player is immobile' + magnitude);
+      game.die();
     }
   }
 

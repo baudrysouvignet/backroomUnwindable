@@ -5,19 +5,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unwindable</title>
-
-    <style>
-        body {
-            margin: 0;
-        }
-    </style>
     
     <script src="https://cdn.jsdelivr.net/gh/kripken/ammo.js@HEAD/builds/ammo.wasm.js"></script>
     <script type="module" src="./project/player.js" defer></script>
     <script type="module" src="./project/main.js" defer></script>
+
+    <link rel="stylesheet" href="assets/style/home.css">
+    <style>
+        * {
+            cursor: none;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+        }
+        .die {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 3;
+            display: none;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
 </head>
 
 <body>
+    <section class="home die">
+        <img src="assets/img/mort.svg" alt="Logo" srcset="">
+        <span>Generer les backroom <img src="assets/img/esc.png" alt="Entrer pour joeur" srcset=""></span>
+    </section>
+    <section class="home homePage">
+        <img src="assets/img/logo.svg" alt="Logo" srcset="">
+        <span>Jouer <img src="assets/img/enter.svg" alt="Entrer pour joeur" srcset=""></span>
+    </section>
 </body>
 
 </html>

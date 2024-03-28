@@ -7,10 +7,10 @@ function init() {
     game.addScene();
 
     document.addEventListener('keydown', function (event) {
-        if (event.key === 'Enter') {
-            game.start();
-        } else if (event.key === 'z') {
+        if (event.key === 'z') {
+            document.querySelector('.home').style.display = 'none !important';
             game.movePlayer('forward');
+            game.start();
         } else if (event.key === 's') {
             game.movePlayer('backward');
         } else if (event.key === 'd') {
@@ -40,3 +40,9 @@ init();
 window.addEventListener('resize', () => {
     game.resizeWindow();
 })
+
+document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') {
+        window.location.reload();
+    }
+});
