@@ -22,9 +22,6 @@ export class Game {
     SPOTLIGHT_ANGLE = Math.PI / 5;
     SPOTHLIGHT_INTENSITY = 70;
 
-    MAP_WIDTH = 11;
-    MAP_HEIGHT = 11;
-
     LIGHT_COLOR = 0xffffff;
     LIGHT_INTENSITY = 0.5;
 
@@ -38,9 +35,11 @@ export class Game {
 
     isStarted = false;
 
-    constructor(widthRender, heightRender) {
+    constructor(widthRender, heightRender , size) {
         this.widthRender = widthRender;
         this.heightRender = heightRender;
+        this.mapWidth = size;
+        this.mapHeight = size;
 
         this.scene = null;
         this.camera = null;
@@ -98,7 +97,7 @@ export class Game {
 
 
     finish() {
-        if (this.player.recoverMesh().position.z > this.MAP_HEIGHT / 2 || this.player.recoverMesh().position.z < -this.MAP_HEIGHT / 2 || this.player.recoverMesh().position.x > this.MAP_WIDTH / 2 || this.player.recoverMesh().position.x < -this.MAP_WIDTH / 2) {
+        if (this.player.recoverMesh().position.z > this.mapHeight / 2 || this.player.recoverMesh().position.z < -this.mapHeight / 2 || this.player.recoverMesh().position.x > this.mapWidth / 2 || this.player.recoverMesh().position.x < -this.mapWidth / 2) {
             this.die();
             document.querySelector('.finish').style.display = 'flex';
         }
@@ -117,7 +116,7 @@ export class Game {
     }
 
     placeGround() {
-        const groundGeometry = new THREE.PlaneGeometry(this.MAP_WIDTH, this.MAP_HEIGHT, 10, 10);
+        const groundGeometry = new THREE.PlaneGeometry(this.mapWidth, this.mapHeight, 10, 10);
         const groundMaterial = new THREE.MeshStandardMaterial({
             side: THREE.DoubleSide,
             color: 0x0A0A0A
@@ -128,7 +127,7 @@ export class Game {
             texture => {
                 texture.wrapS = THREE.RepeatWrapping;
                 texture.wrapT = THREE.RepeatWrapping;
-                texture.repeat.set(this.MAP_WIDTH, this.MAP_HEIGHT);
+                texture.repeat.set(this.mapWidth, this.mapHeight);
                 groundMaterial.map = texture;
                 groundMaterial.needsUpdate = true;
             }
@@ -184,13 +183,13 @@ export class Game {
         this.player.addMesh(this.scene);
 
 
-        this.map = new MapMaze(this.MAP_WIDTH, this.MAP_HEIGHT).createMap();
+        this.map = new MapMaze(this.mapWidth, this.mapHeight).createMap();
 
-        for (let y = 0; y < this.MAP_HEIGHT; y++) {
-            for (let x = 0; x < this.MAP_WIDTH; x++) {
+        for (let y = 0; y < this.mapHeight; y++) {
+            for (let x = 0; x < this.mapWidth; x++) {
                 if (!this.map[y][x]) {
                     const randomHeight = Math.floor(Math.random() * this.WALL_MAX_HEIGHT) + this.WALL_MIN_HEIGHT;
-                    this.scene.add(new Wall(this.physicsWorld, randomHeight, x - (this.MAP_WIDTH / 2), y - (this.MAP_WIDTH / 2)).addWall());
+                    this.scene.add(new Wall(this.physicsWorld, randomHeight, x - (this.mapWidth / 2), y - (this.mapWidth / 2)).addWall());
                 }
             }
         }
