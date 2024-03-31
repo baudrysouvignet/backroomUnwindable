@@ -22,8 +22,8 @@ export class Game {
     SPOTLIGHT_ANGLE = Math.PI / 5;
     SPOTHLIGHT_INTENSITY = 70;
 
-    MAP_WIDTH = 101;
-    MAP_HEIGHT = 101;
+    MAP_WIDTH = 11;
+    MAP_HEIGHT = 11;
 
     LIGHT_COLOR = 0xffffff;
     LIGHT_INTENSITY = 0.5;
@@ -56,6 +56,7 @@ export class Game {
             return;
         }
         requestAnimationFrame(this.animate);
+        this.finish();
         this.physicsWorld.stepSimulation(1 / 60, 10)
         if (this.isStarted) {
             this.player.update(this);
@@ -93,6 +94,14 @@ export class Game {
 
             this.placeGround();
         }.bind(this));
+    }
+
+
+    finish() {
+        if (this.player.recoverMesh().position.z > this.MAP_HEIGHT / 2 || this.player.recoverMesh().position.z < -this.MAP_HEIGHT / 2 || this.player.recoverMesh().position.x > this.MAP_WIDTH / 2 || this.player.recoverMesh().position.x < -this.MAP_WIDTH / 2) {
+            this.die();
+            document.querySelector('.finish').style.display = 'flex';
+        }
     }
 
     initGroundPhysics(physicsWorld) {
@@ -226,8 +235,6 @@ export class Game {
     }
 
     die() {
-        console.log('die');
-
         this.isStarted = false;
         this.scene.remove(this.player.recoverMesh());
         this.scene.remove(this.spotLight);
