@@ -6,6 +6,8 @@ import { Wall } from './wall.js';
 
 import { Player } from './player.js';
 
+import { Monster } from './monster.js';
+
 export class Game {
     BACKGROUND_COLOR_SCENE = 0x0A0A0A;
     NEAR_CAMERA = 0.1;
@@ -34,8 +36,9 @@ export class Game {
     GRAVITY = -9.8;
 
     isStarted = false;
+    startedAt = null;
 
-    constructor(widthRender, heightRender , size) {
+    constructor(widthRender, heightRender, size) {
         this.widthRender = widthRender;
         this.heightRender = heightRender;
         this.mapWidth = size;
@@ -48,6 +51,7 @@ export class Game {
         this.ground = null;
         this.physicsWorld = null;
         this.spotLight = null;
+        this.monster = null;
     }
 
     animate = () => {
@@ -57,14 +61,17 @@ export class Game {
         requestAnimationFrame(this.animate);
         this.finish();
         this.physicsWorld.stepSimulation(1 / 60, 10)
+        this.checkColision();
         if (this.isStarted) {
             this.player.update(this);
+        }
+        if (this.monster) {
+            this.monster.update(this, this.scene);
         }
         this.updateCamera();
         this.updateSpotLight();
         this.renderer.render(this.scene, this.camera);
     }
-
 
     addScene() {
         this.scene = new THREE.Scene();
@@ -100,6 +107,9 @@ export class Game {
         if (this.player.recoverMesh().position.z > this.mapHeight / 2 || this.player.recoverMesh().position.z < -this.mapHeight / 2 || this.player.recoverMesh().position.x > this.mapWidth / 2 || this.player.recoverMesh().position.x < -this.mapWidth / 2) {
             this.die();
             document.querySelector('.finish').style.display = 'flex';
+            document.querySelector('#timeGame').innerHTML = Math.floor((Date.now() - this.startedAt) / 60000) + ' minutes ' + Math.floor((Date.now() - this.startedAt) / 1000) + ' secondes';
+
+
         }
     }
 
@@ -153,8 +163,6 @@ export class Game {
 
         this.spotLight.position.set(position.x + this.SPOTLIGHT_POSITION.x, position.y + this.SPOTLIGHT_POSITION.y, position.z + this.SPOTLIGHT_POSITION.z);
         this.spotLight.target = mesh;
-
-        console.log(position.z + this.SPOTLIGHT_POSITION.z)
     }
 
     addMainCamera() {
@@ -173,12 +181,15 @@ export class Game {
         if (this.isStarted) {
             return;
         }
+        this.startedAt = Date.now();
         this.isStarted = true
 
         this.player = new Player(this.physicsWorld);
+        this.monster = new Monster(this.physicsWorld);
 
         this.addSpotLight();
         this.addMainCamera();
+        this.monster.addMesh(this.scene)
         this.animate();
         this.player.addMesh(this.scene);
 
@@ -233,10 +244,23 @@ export class Game {
         this.camera.updateProjectionMatrix();
     }
 
-    die() {
+    checkColision() {
+        if (this.player.recoverMesh().position.distanceTo(this.monster.recoverMesh().position) < this.player.radius + this.monster.radius) {
+            if (this.startedAt + 1000 < Date.now()) {
+                this.die('monster');
+            }
+        }
+    }
+
+    die(type) {
         this.isStarted = false;
         this.scene.remove(this.player.recoverMesh());
         this.scene.remove(this.spotLight);
+
+        if (type === 'monster') {
+            document.querySelector('.dieMonster').style.display = 'flex';
+            return;
+        }
         document.querySelector('.die').style.display = 'flex';
     }
 }
