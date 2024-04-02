@@ -43,7 +43,7 @@ export class Game {
         this.heightRender = heightRender;
         this.mapWidth = size;
         this.mapHeight = size;
-        this.NUMBER_OF_ENNEMIES = size/4;
+        this.NUMBER_OF_ENNEMIES = size / 2;
 
         this.scene = null;
         this.camera = null;
@@ -190,7 +190,7 @@ export class Game {
 
         this.player = new Player(this.physicsWorld);
         for (let i = 0; i < this.NUMBER_OF_ENNEMIES; i++) {
-            this.monster.push(new Monster(this.physicsWorld, 0.4, new THREE.Vector3(Math.floor(Math.random() * this.mapWidth) + 1, 0, Math.floor(Math.random() * this.mapHeight) + 1)));
+            this.monster.push(new Monster(this.physicsWorld, 0.4, new THREE.Vector3(Math.floor([-15, -17, -19, 15, 17, 19, 10][Math.floor(Math.random() * 6)], 0, [-15, -17, -19, 15, 17, 19, 10][Math.floor(Math.random() * 6)]) + 1)));
         }
 
 
