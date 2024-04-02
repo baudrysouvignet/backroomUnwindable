@@ -64,7 +64,7 @@ $mapSize = isset($_GET['size']) ? $_GET['size'] : 101; ?>
         <select name="size" id="sizeMap">
             <option value="101" <?= $mapSize == 101 ? "selected" : "" ?>>Dificile</option>
             <option value="76" <?= $mapSize == 76 ? "selected" : "" ?>>Facile</option>
-            <option value="10" <?= $mapSize == 10 ? "selected" : "" ?>>Ultra Facile</option>
+            <option value="51" <?= $mapSize == 51 ? "selected" : "" ?>>Ultra Facile</option>
         </select>
         <span>Jouer <img src="assets/img/enter.svg" alt="Entrer pour joeur" srcset=""></span>
     </section>

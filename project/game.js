@@ -107,7 +107,7 @@ export class Game {
         if (this.player.recoverMesh().position.z > this.mapHeight / 2 || this.player.recoverMesh().position.z < -this.mapHeight / 2 || this.player.recoverMesh().position.x > this.mapWidth / 2 || this.player.recoverMesh().position.x < -this.mapWidth / 2) {
             this.die();
             document.querySelector('.finish').style.display = 'flex';
-            document.querySelector('#timeGame').innerHTML = Math.floor((Date.now() - this.startedAt) / 60000) + ' minutes ' + Math.floor((Date.now() - this.startedAt) / 1000) + ' secondes';
+            document.querySelector('#timeGame').innerHTML = Math.floor((Date.now() - this.startedAt) / 1000) + ' secondes';
 
 
         }

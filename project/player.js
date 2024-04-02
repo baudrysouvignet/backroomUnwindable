@@ -16,7 +16,7 @@ export class Player {
   };
   y = -1;
 
-  constructor(physicsWorld, radius = 0.4, position = new THREE.Vector3(0.01, 10, 0), color = 0xff0000) {
+  constructor(physicsWorld, radius = 0.4, position = new THREE.Vector3(0.01, 10, 0), color = 0x002147) {
     this.physicsWorld = physicsWorld;
     this.radius = radius;
     this.position = position;
@@ -29,7 +29,7 @@ export class Player {
 
   createMesh() {
     const geometry = new THREE.SphereGeometry(this.radius, 32, 32);
-    const material = new THREE.MeshBasicMaterial({ color: this.color });
+    const material = new THREE.MeshPhongMaterial({ color: this.color });
     this.mesh = new THREE.Mesh(geometry, material);
   }
 

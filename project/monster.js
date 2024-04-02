@@ -29,7 +29,7 @@ export class Monster {
 
     createMesh() {
         const geometry = new THREE.SphereGeometry(this.radius, 32, 32);
-        const material = new THREE.MeshBasicMaterial({ color: this.color });
+        const material = new THREE.MeshPhongMaterial({ color: this.color });
         this.mesh = new THREE.Mesh(geometry, material);
     }
 
