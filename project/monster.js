@@ -15,6 +15,7 @@ export class Monster {
     isBackward = false;
     isLeft = false;
     isRight = false;
+    lastDirectionTime = Date.now();
 
     constructor(physicsWorld, radius = 0.4, position = new THREE.Vector3(1, 0, 3), color = 0x00ff00) {
         this.physicsWorld = physicsWorld;
@@ -25,6 +26,7 @@ export class Monster {
 
         this.createMesh();
         this.createPhysicsBody();
+        this.changeDrircetion();
     }
 
     createMesh() {
@@ -76,9 +78,44 @@ export class Monster {
         this.body.setLinearVelocity(resultantImpulse);
     }
 
+    changeDrircetion() {
+        let randomDirection = ['forward', 'backward', 'leftward', 'rightward'];
+        let randomIndex = Math.floor(Math.random() * randomDirection.length);
+        let random = randomDirection[randomIndex];
+
+        const velocity = this.body.getLinearVelocity();
+        const magnitude = velocity.length();
+        console.log(magnitude);
+
+        if (-(this.lastDirectionTime - Date.now()) > 3000 || (magnitude < 0.5)) {
+            this.isForward = false;
+            this.isBackward = false;
+            this.isLeft = false;
+            this.isRight = false;
+
+            switch (random) {
+                case 'forward':
+                    this.isForward = true;
+                    break;
+                case 'backward':
+                    this.isBackward = true;
+                    break;
+                case 'leftward':
+                    this.isLeft = true;
+                    break;
+                case 'rightward':
+                    this.isRight = true;
+                    break;
+            }
+            this.lastDirectionTime = Date.now();
+        }
+
+    }
 
     update(game, scene) {
         this.moveBall();
+
+        this.changeDrircetion();
 
         const transform = new Ammo.btTransform();
         this.body.getMotionState().getWorldTransform(transform);

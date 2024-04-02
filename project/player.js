@@ -123,6 +123,7 @@ export class Player {
 
     const velocity = this.body.getLinearVelocity();
     const magnitude = velocity.length();
+    console.log(magnitude);
     if (magnitude <= 0) {
       game.die(); d
     }

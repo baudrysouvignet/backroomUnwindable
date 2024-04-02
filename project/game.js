@@ -32,6 +32,7 @@ export class Game {
 
     CONTROLS_MIN_DISTANCE = 2;
     CONTROLS_MAX_DISTANCE = 10;
+    NUMBER_OF_ENNEMIES = 10;
 
     GRAVITY = -9.8;
 
@@ -51,7 +52,7 @@ export class Game {
         this.ground = null;
         this.physicsWorld = null;
         this.spotLight = null;
-        this.monster = null;
+        this.monster = [];
     }
 
     animate = () => {
@@ -61,12 +62,15 @@ export class Game {
         requestAnimationFrame(this.animate);
         this.finish();
         this.physicsWorld.stepSimulation(1 / 60, 10)
-        this.checkColision();
         if (this.isStarted) {
             this.player.update(this);
         }
         if (this.monster) {
-            this.monster.update(this, this.scene);
+            for (let i = 0; i < this.monster.length; i++) {
+                this.monster[i].update(this, this.scene);
+
+                this.checkColision(this.monster[i]);
+            }
         }
         this.updateCamera();
         this.updateSpotLight();
@@ -185,11 +189,16 @@ export class Game {
         this.isStarted = true
 
         this.player = new Player(this.physicsWorld);
-        this.monster = new Monster(this.physicsWorld);
+        for (let i = 0; i < this.NUMBER_OF_ENNEMIES; i++) {
+            this.monster.push(new Monster(this.physicsWorld, 0.4, new THREE.Vector3(Math.floor(Math.random() * this.mapWidth) + 1, 0, Math.floor(Math.random() * this.mapHeight) + 1)));
+        }
+
 
         this.addSpotLight();
         this.addMainCamera();
-        this.monster.addMesh(this.scene)
+        for (let i = 0; i < this.monster.length; i++) {
+            this.monster[i].addMesh(this.scene);
+        }
         this.animate();
         this.player.addMesh(this.scene);
 
@@ -244,8 +253,8 @@ export class Game {
         this.camera.updateProjectionMatrix();
     }
 
-    checkColision() {
-        if (this.player.recoverMesh().position.distanceTo(this.monster.recoverMesh().position) < this.player.radius + this.monster.radius) {
+    checkColision(monster) {
+        if (this.player.recoverMesh().position.distanceTo(monster.recoverMesh().position) < this.player.radius + monster.radius) {
             if (this.startedAt + 1000 < Date.now()) {
                 this.die('monster');
             }
