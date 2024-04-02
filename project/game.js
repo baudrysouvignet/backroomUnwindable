@@ -32,7 +32,6 @@ export class Game {
 
     CONTROLS_MIN_DISTANCE = 2;
     CONTROLS_MAX_DISTANCE = 10;
-    NUMBER_OF_ENNEMIES = 10;
 
     GRAVITY = -9.8;
 
@@ -44,6 +43,7 @@ export class Game {
         this.heightRender = heightRender;
         this.mapWidth = size;
         this.mapHeight = size;
+        this.NUMBER_OF_ENNEMIES = size/4;
 
         this.scene = null;
         this.camera = null;
